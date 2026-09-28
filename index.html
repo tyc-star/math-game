@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚡ 數學冒險王：怪獸卡收集戰 ⚡</title>
+    <style>
+        :root {
+            --primary: #4a90e2;
+            --secondary: #f5a623;
+            --success: #7ed321;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+            --rarity-n: #bdc3c7;
+            --rarity-r: #3498db;
+            --rarity-sr: #9b59b6;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: var(--light);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .game-container {
+            width: 100%;
+            max-width: 800px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid rgba(255,255,255,0.1);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .diamond-status {
+            font-size: 24px;
+            font-weight: bold;
+            color: #50e3c2;
+            text-shadow: 0 0 10px rgba(80,227,194,0.5);
+            background: rgba(0,0,0,0.3);
+            padding: 8px 15px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .game-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .game-grid { grid-template-columns: 1fr; }
+        }
+
+        .panel {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+
+        .math-box h2 { color: var(--primary); margin-top: 0; }
+        .question { font-size: 36px; font-weight: bold; margin: 20px 0; color: #fff; }
+        input[type="number"] {
+            font-size: 24px;
+            width: 120px;
+            padding: 8px;
+            border-radius: 8px;
+            border: none;
+            text-align: center;
+            margin-right: 10px;
+        }
+        button {
+            font-size: 20px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+        .btn-submit { background-color: var(--success); color: white; }
+        .btn-submit:hover { transform: scale(1.05); background-color: #66bb1a; }
+
+        .gacha-box h2 { color: var(--secondary); margin-top: 0; }
+        .egg-display {
+            font-size: 70px;
+            margin: 15px 0;
+            cursor: pointer;
+            display: inline-block;
+        }
+        .egg-shake {
+            animation: shake 0.5s ease infinite;
+        }
+        @keyframes shake {
+            0% { transform: rotate(0deg); }
+            20% { transform: rotate(-10deg); }
+            40% { transform: rotate(10deg); }
+            60% { transform: rotate(-10deg); }
+            80% { transform: rotate(10deg); }
+            100% { transform: rotate(0deg); }
+        }
+        .btn-gacha { background-color: var(--secondary); color: white; width: 100%; margin-top: 10px;}
+        .btn-gacha:hover { transform: scale(1.03); background-color: #e09216; }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+        .modal-content {
+            background: #222;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            border: 3px solid var(--secondary);
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .monster-card {
+            width: 130px;
+            background: #333;
+            border-radius: 12px;
+            padding: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            display: inline-block;
+            margin: 8px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #555;
+        }
+        .card-n { border-color: var(--rarity-n); }
+        .card-r { border-color: var(--rarity-r); box-shadow: 0 0 10px rgba(52, 152, 219, 0.5); }
+        .card-sr { border-color: var(--rarity-sr); box-shadow: 0 0 15px rgba(155, 89, 182, 0.8); animation: glow 1.5s ease-in-out infinite alternate; }
+        @keyframes glow {
+            0% { box-shadow: 0 0 10px rgba(155, 89, 182, 0.5); }
+            100% { box-shadow: 0 0 25px rgba(155, 89, 182, 1); }
+        }
+        .rarity-tag {
+            font-size: 11px;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: white;
+            display: inline-block;
+            margin-bottom: 5px;
+        }
+        .tag-n { background: var(--rarity-n); color: #333; }
+        .tag-r { background: var(--rarity-r); }
+        .tag-sr { background: var(--rarity-sr); }
+        .monster-avatar { font-size: 40px; margin: 10px 0; }
+        .monster-name { font-weight: bold; font-size: 14px; }
+
+        .collection-box {
+            margin-top: 20px;
+            width: 100%;
+        }
+        .collection-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            min-height: 100px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 10px;
+            padding: 10px;
+        }
+        .empty-tip { color: #aaa; font-style: italic; margin-top: 40px; }
+        .btn-reset { background-color: #e74c3c; color: white; font-size: 12px; padding: 5px 10px; border-radius: 5px; margin-top: 15px; }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <header>
+            <h1>⚔️ 數學怪獸島 ⚔️</h1>
+            <div class="diamond-status">💎 <span id="diamond-count">0</span></div>
+        </header>
+
+        <div class="game-grid">
+            <div class="panel math-box">
+                <h2>🎯 答題挑戰</h2>
+                <p>答對即可獲得 💎 5 顆鑽石！</p>
+                <div class="question" id="question-text">計算中...</div>
+                <div style="display: flex; justify-content: center; align-items: center;">
+                    <input type="number" id="user-answer" placeholder="?" onkeydown="if(event.key==='Enter') checkAnswer()">
+                    <button class="btn-submit" onclick="checkAnswer()">送出</button>
+                </div>
+            </div>
+
+            <div class="panel gacha-box">
+                <h2>🥚 扭蛋商店</h2>
+                <p>消耗 💎 10 顆鑽石抽一張怪獸卡！</p>
+                <div class="egg-display" id="egg-element">🥚</div>
+                <button class="btn-gacha" onclick="startGacha()">進行抽蛋 💎x10</button>
+                <div style="font-size: 12px; color: #aaa; margin-top: 8px;">機率：SR(10%) | R(30%) | N(60%)</div>
+            </div>
+        </div>
+
+        <div class="panel collection-box">
+            <h2>📜 我的怪獸圖鑑 (<span id="collection-count">0</span>)</h2>
+            <div class="collection-list" id="collection-container">
+                <span class="empty-tip">目前還沒有收集到怪獸，快去抽蛋吧！</span>
+            </div>
+            <button class="btn-reset" onclick="resetGame()">重設遊戲進度</button>
+        </div>
+    </div>
+
+    <div class="modal" id="result-modal">
+        <div class="modal-content" id="modal-card-placeholder">
+        </div>
+    </div>
+
+    <script>
+        const monsterDatabase = [
+            { id: 1, name: "小火犬", rarity: "N", emoji: "🐶" },
+            { id: 2, name: "綠葉龜", rarity: "N", emoji: "🐢" },
+            { id: 3, name: "飛天鼠", rarity: "N", emoji: "🐭" },
+            { id: 4, name: "噴火巨龍", rarity: "R", emoji: "🐲" },
+            { id: 5, name: "海角水母", rarity: "R", emoji: "🪼" },
+            { id: 6, name: "雷電麒麟", rarity: "SR", emoji: "🦄" },
+            { id: 7, name: "不滅鳳凰", rarity: "SR", emoji: "🦚" }
+        ];
+
+        let playerData = JSON.parse(localStorage.getItem('math_game_player_data')) || {
+            diamonds: 15,
+            collection: []
+        };
+
+        let currentQuestion = { num1: 0, num2: 0, answer: 0 };
+
+        function initGame() {
+            generateQuestion();
+            updateUI();
+        }
+
+        function updateUI() {
+            document.getElementById('diamond-count').innerText = playerData.diamonds;
+            document.getElementById('collection-count').innerText = playerData.collection.length;
+            
+            const container = document.getElementById('collection-container');
+            if (playerData.collection.length === 0) {
+                container.innerHTML = '<span class="empty-tip">目前還沒有收集到怪獸，快去抽蛋吧！</span>';
+            } else {
+                container.innerHTML = '';
+                [...playerData.collection].reverse().forEach(monster => {
+                    container.appendChild(createCardHTML(monster));
+                });
+            }
+            localStorage.setItem('math_game_player_data', JSON.stringify(playerData));
+        }
+
+        function createCardHTML(monster) {
+            const card = document.createElement('div');
+            card.className = `monster-card card-${monster.rarity.toLowerCase()}`;
+            
+            card.innerHTML = `
+                <span class="rarity-tag tag-${monster.rarity.toLowerCase()}">${monster.rarity}</span>
+                <div class="monster-avatar">${monster.emoji}</div>
+                <div class="monster-name">${monster.name}</div>
+            `;
+            return card;
+        }
+
+        function generateQuestion() {
+            currentQuestion.num1 = Math.floor(Math.random() * 8) + 2;
+            currentQuestion.num2 = Math.floor(Math.random() * 8) + 2;
+            currentQuestion.answer = currentQuestion.num1 * currentQuestion.num2;
+            
+            document.getElementById('question-text').innerText = `${currentQuestion.num1} × ${currentQuestion.num2} = ?`;
+            document.getElementById('user-answer').value = '';
+            document.getElementById('user-answer').focus();
+        }
+
+        function checkAnswer() {
+            const inputElement = document.getElementById('user-answer');
+            const userAnswer = parseInt(inputElement.value);
+
+            if (isNaN(userAnswer)) return;
+
+            if (userAnswer === currentQuestion.answer) {
+                playerData.diamonds += 5;
+                alert("🎉 太棒了！答對了！獲得 💎 5 顆鑽石！");
+                generateQuestion();
+                updateUI();
+            } else {
+                alert("❌ 答案不太對哦，再挑戰一次試試看！");
+                inputElement.value = '';
+                inputElement.focus();
+            }
+        }
+
+        let isGachaRunning = false;
+        function startGacha() {
+            if (isGachaRunning) return;
+            
+            const cost = 10;
+            if (playerData.diamonds < cost) {
+                alert("❌ 你的鑽石不夠呢！快去回答數學題賺取鑽石吧！");
+                return;
+            }
+
+            playerData.diamonds -= cost;
+            updateUI();
+            isGachaRunning = true;
+
+            const egg = document.getElementById('egg-element');
+            egg.classList.add('egg-shake');
+            egg.innerText = "🥚";
+
+            setTimeout(() => {
+                egg.classList.remove('egg-shake');
+                egg.innerText = "💥";
+                
+                const roll = Math.floor(Math.random() * 100);
+                let selectedRarity = "N";
+                if (roll < 10) selectedRarity = "SR";
+                else if (roll < 40) selectedRarity = "R";
+                else selectedRarity = "N";
+
+                const pool = monsterDatabase.filter(m => m.rarity === selectedRarity);
+                const prize = pool[Math.floor(Math.random() * pool.length)];
+
+                playerData.collection.push(prize);
+                showGachaResult(prize);
+                
+                isGachaRunning = false;
+                egg.innerText = "🥚";
+                updateUI();
+            }, 1200);
+        }
+
+        function showGachaResult(monster) {
+            const modal = document.getElementById('result-modal');
+            const placeholder = document.getElementById('modal-card-placeholder');
+            
+            placeholder.innerHTML = `
+                <h2 style="color: #fff; margin-bottom:15px;">🎉 恭喜獲得怪獸！</h2>
+                <div id="result-card-box" style="display:flex; justify-content:center; margin-bottom: 20px;"></div>
+                <button onclick="closeModal()" style="background-color: var(--primary); color:white;">收進圖鑑</button>
+            `;
+            
+            document.getElementById('result-card-box').appendChild(createCardHTML(monster));
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('result-modal').style.display = 'none';
+        }
+
+        function resetGame() {
+            if(confirm("確定要重設遊戲嗎？你的鑽石和怪獸卡都會歸零喔！")) {
+                localStorage.removeItem('math_game_player_data');
+                playerData = { diamonds: 15, collection: [] };
+                initGame();
+            }
+        }
+
+        window.onload = initGame;
+    </script>
+</body>
+</html>
