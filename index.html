@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚡ 數學訓練大師：寶可夢收集戰 ⚡</title>
+    <title>⚡ 寶可夢數學島：大師養成戰 ⚡</title>
     <style>
         :root {
             --primary: #ffcb05; /* 寶可夢黃 */
             --secondary: #3b4cca; /* 寶可夢藍 */
             --success: #4caf50;
-            --dark: #1e1e24;
+            --dark: #111a2e;
             --light: #f4f4f9;
             --rarity-n: #a8a878;
             --rarity-r: #f08030;
@@ -52,11 +52,11 @@
             color: var(--primary);
             text-shadow: 2px 2px 0px var(--secondary), -2px -2px 0px var(--secondary), 2px -2px 0px var(--secondary), -2px 2px 0px var(--secondary);
             margin: 0;
-            font-size: 28px;
+            font-size: 26px;
         }
 
         .diamond-status {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: bold;
             color: #50e3c2;
             text-shadow: 0 0 10px rgba(80,227,194,0.5);
@@ -121,7 +121,6 @@
             margin: 15px 0;
             cursor: pointer;
             display: inline-block;
-            transition: transform 0.1s;
         }
         .egg-shake {
             animation: shake 0.5s ease infinite;
@@ -134,8 +133,7 @@
             80% { transform: rotate(10deg) scale(1.1); }
             100% { transform: rotate(0deg) scale(1); }
         }
-        .btn-gacha { background: linear-gradient(180deg, #ff5b5b 50%, #fff 50%); color: #333; width: 100%; margin-top: 10px; border: 2px solid #333; text-shadow: 1px 1px 0 #fff; position: relative; overflow: hidden;}
-        .btn-gacha::before { content: "🔴"; position: absolute; left: 10px; top: 8px; font-size: 14px; }
+        .btn-gacha { background: linear-gradient(180deg, #ff5b5b 50%, #fff 50%); color: #333; width: 100%; margin-top: 10px; border: 2px solid #333; text-shadow: 1px 1px 0 #fff;}
         .btn-gacha:hover { transform: scale(1.03); box-shadow: 0 0 10px rgba(255,91,91,0.5); }
 
         /* 抽中通知彈窗 */
@@ -183,12 +181,12 @@
         .card-sr { border-color: var(--rarity-sr); box-shadow: 0 0 15px rgba(160, 64, 160, 0.6); animation: glow 1.5s ease-in-out infinite alternate; }
         
         @keyframes glow {
-            0% { box-shadow: 0 0 10px rgba(160, 64, 160, 0.4), inset 0 0 5px rgba(160, 64, 160, 0.2); border-color: #a040a0; }
-            100% { box-shadow: 0 0 25px rgba(216, 113, 216, 0.9), inset 0 0 10px rgba(216, 113, 216, 0.4); border-color: #ff88ff; }
+            0% { box-shadow: 0 0 10px rgba(160, 64, 160, 0.4); border-color: #a040a0; }
+            100% { box-shadow: 0 0 25px rgba(216, 113, 216, 0.9); border-color: #ff88ff; }
         }
         
         .rarity-tag {
-            font-size: 10px;
+            font-size: 11px;
             font-weight: bold;
             padding: 2px 6px;
             border-radius: 4px;
@@ -201,14 +199,14 @@
         .tag-sr { background: linear-gradient(45deg, #a040a0, #ff88ff); text-shadow: 1px 1px 0px #000; }
         
         .monster-img-container {
-            width: 90px;
-            height: 90px;
-            margin: 0 auto 10px auto;
+            width: 95px;
+            height: 95px;
+            margin: 0 auto 5px auto;
             display: flex;
             align-items: center;
             justify-content: center;
             background: rgba(255,255,255,0.05);
-            border-radius: 50%;
+            border-radius: 8px;
             padding: 5px;
         }
         .monster-img {
@@ -243,14 +241,14 @@
 
     <div class="game-container">
         <header>
-            <h1>🔴 寶可夢數學冒險 🔴</h1>
+            <h1>🔴 寶可夢數學大師挑戰 🔴</h1>
             <div class="diamond-status">💎 <span id="diamond-count">0</span></div>
         </header>
 
         <div class="game-grid">
             <!-- 數學挑戰區 -->
             <div class="panel math-box">
-                <h2>🎯 答題訓練挑戰</h2>
+                <h2>🎯 答題挑戰</h2>
                 <p style="font-size: 13px; color: #aaa;">答對即可獲得 💎 5 顆鑽石！</p>
                 <div class="question" id="question-text">計算中...</div>
                 <div style="display: flex; justify-content: center; align-items: center;">
@@ -259,11 +257,11 @@
                 </div>
             </div>
 
-            <!-- 精靈球商店區 -->
+            <!-- 扭蛋商店區 -->
             <div class="panel gacha-box">
                 <h2>🎒 捕捉精靈商店</h2>
                 <p style="font-size: 13px; color: #aaa;">消耗 💎 10 顆鑽石丟出精靈球！</p>
-                <div class="egg-display" id="egg-element">⚽</div>
+                <div class="egg-display" id="egg-element">🔴</div>
                 <button class="btn-gacha" onclick="startGacha()">投擲精靈球 💎x10</button>
                 <div style="font-size: 11px; color: #888; margin-top: 8px;">機率：傳說SR(10%) | 稀有R(30%) | 普通N(60%)</div>
             </div>
@@ -271,3 +269,7 @@
 
         <!-- 寶可夢圖鑑區 -->
         <div class="panel collection-box">
+            <h2>📜 我的寶可夢背包 (<span id="collection-count">0</span>)</h2>
+            <div class="collection-list" id="collection-container">
+                <span class="empty-tip">目前背包空空如也，快去賺鑽石抽寶可夢吧！</span>
+            </div>
