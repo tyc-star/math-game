@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚡ 寶可夢數學島：大師養成戰 ⚡</title>
+    <title>⚡ 寶可夢數學大師挑戰 ⚡</title>
     <style>
         :root {
             --primary: #ffcb05; /* 寶可夢黃 */
@@ -133,7 +133,7 @@
             80% { transform: rotate(10deg) scale(1.1); }
             100% { transform: rotate(0deg) scale(1); }
         }
-        .btn-gacha { background: linear-gradient(180deg, #ff5b5b 50%, #fff 50%); color: #333; width: 100%; margin-top: 10px; border: 2px solid #333; text-shadow: 1px 1px 0 #fff;}
+        .btn-gacha { background: linear-gradient(180deg, #ff5b5b 50%, #fff 50%); color: #333; width: 100%; margin-top: 10px; border: 2px solid #333; text-shadow: 1px 1px 0 #fff; cursor: pointer; font-weight: bold;}
         .btn-gacha:hover { transform: scale(1.03); box-shadow: 0 0 10px rgba(255,91,91,0.5); }
 
         /* 抽中通知彈窗 */
@@ -233,7 +233,7 @@
             border: 1px dashed rgba(255,255,255,0.1);
         }
         .empty-tip { color: #888; font-style: italic; margin-top: 45px; font-size: 14px; }
-        .btn-reset { background-color: #333; color: #999; font-size: 11px; padding: 5px 10px; border-radius: 5px; margin-top: 20px; border: 1px solid #444; }
+        .btn-reset { background-color: #333; color: #999; font-size: 11px; padding: 5px 10px; border-radius: 5px; margin-top: 20px; border: 1px solid #444; cursor: pointer; }
         .btn-reset:hover { background-color: #c0392b; color: white; border-color: #c0392b; }
     </style>
 </head>
@@ -250,7 +250,7 @@
             <div class="panel math-box">
                 <h2>🎯 答題挑戰</h2>
                 <p style="font-size: 13px; color: #aaa;">答對即可獲得 💎 5 顆鑽石！</p>
-                <div class="question" id="question-text">計算中...</div>
+                <div class="question" id="question-text">7 × 3 = ?</div>
                 <div style="display: flex; justify-content: center; align-items: center;">
                     <input type="number" id="user-answer" placeholder="?" onkeydown="if(event.key==='Enter') checkAnswer()">
                     <button class="btn-submit" onclick="checkAnswer()">送出</button>
